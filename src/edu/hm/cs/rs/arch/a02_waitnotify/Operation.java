@@ -1,6 +1,6 @@
 /* (C) 2016, R. Schiedermeier, rs@cs.hm.edu
  * Oracle Corporation Java 1.8.0_72, Linux i386 4.3.0
- * violet (Intel Core i7 CPU 920/2668 MHz, 8 Cores, 12032 MB RAM)
+ * violet (Intel Core i7 CPU 920/2668 MHz, 8 Cores, 12032 MB RAM) TEst
  **/
 package edu.hm.cs.rs.arch.a02_waitnotify;
 
