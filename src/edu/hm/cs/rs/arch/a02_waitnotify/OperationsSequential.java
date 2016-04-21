@@ -23,6 +23,10 @@ public class OperationsSequential {
             C3.exec();
         };
 
+        new Thread(runAs).start();
+        new Thread(runBs).start();
+        new Thread(runCs).start();
+
         System.out.println("complete");
     }
 }
