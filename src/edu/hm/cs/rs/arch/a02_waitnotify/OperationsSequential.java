@@ -35,40 +35,41 @@ public class OperationsSequential {
         Object monitor = new Object();
 
         Runnable runAs = () -> {
+            System.out.println("A1 started.");
             A1.exec();
             synchronized (monitor){
             operationsSequential.setFirstCounter(operationsSequential.getSecondCounter()+1);
                 monitor.notifyAll();
             }
-            System.out.println("A1 finished.");
+            System.out.println("A2 started.");
             A2.exec();
             synchronized (monitor){
                 operationsSequential.setSecondCounter(operationsSequential.getSecondCounter()+1);
                 monitor.notifyAll();
             }
-            System.out.println("A2 finished.");
+            System.out.println("A3 started.");
             A3.exec();
-            System.out.println("A3 finished.");
         };
 
         Runnable runBs = () -> {
+            System.out.println("B1 started.");
             B1.exec();
             synchronized (monitor){
                 operationsSequential.setFirstCounter(operationsSequential.getFirstCounter()+1);
                 monitor.notifyAll();
             }
-            System.out.println("B1 finished.");
+            System.out.println("B2 started.");
             B2.exec();
             synchronized (monitor){
                 operationsSequential.setSecondCounter(operationsSequential.getSecondCounter()+1);
                 monitor.notifyAll();
             }
-            System.out.println("B2 finished.");
+            System.out.println("B3 started.");
             B3.exec();
-            System.out.println("B3 finished.");
         };
 
         Runnable runCs = () -> {
+            System.out.println("C1 started.");
             C1.exec();
             synchronized (monitor){
                 while(operationsSequential.getFirstCounter()!=2) {
@@ -83,7 +84,7 @@ public class OperationsSequential {
                 operationsSequential.setSecondCounter(operationsSequential.getSecondCounter()+1);
                 monitor.notifyAll();
             }
-            System.out.println("C1 finished.");
+            System.out.println("C2 started.");
             C2.exec();
             synchronized (monitor) {
                 while (operationsSequential.getSecondCounter() < 2) {
@@ -96,9 +97,8 @@ public class OperationsSequential {
                     System.out.println("woke up ...");
                 }
             }
-            System.out.println("C2 finished.");
+            System.out.println("C3 started.");
             C3.exec();
-            System.out.println("C3 finished.");
         };
 
         new Thread(runAs).start();
