@@ -40,12 +40,15 @@ public class OperationsSequential {
             operationsSequential.setFirstCounter(operationsSequential.getSecondCounter()+1);
                 monitor.notifyAll();
             }
+            System.out.println("A1 finished.");
             A2.exec();
             synchronized (monitor){
                 operationsSequential.setSecondCounter(operationsSequential.getSecondCounter()+1);
                 monitor.notifyAll();
             }
+            System.out.println("A2 finished.");
             A3.exec();
+            System.out.println("A3 finished.");
         };
 
         Runnable runBs = () -> {
@@ -54,12 +57,15 @@ public class OperationsSequential {
                 operationsSequential.setFirstCounter(operationsSequential.getSecondCounter()+1);
                 monitor.notifyAll();
             }
+            System.out.println("B1 finished.");
             B2.exec();
             synchronized (monitor){
                 operationsSequential.setSecondCounter(operationsSequential.getSecondCounter()+1);
                 monitor.notifyAll();
             }
+            System.out.println("B2 finished.");
             B3.exec();
+            System.out.println("B3 finished.");
         };
 
         Runnable runCs = () -> {
@@ -77,6 +83,7 @@ public class OperationsSequential {
                 operationsSequential.setSecondCounter(operationsSequential.getSecondCounter()+1);
                 monitor.notifyAll();
             }
+            System.out.println("C1 finished.");
             C2.exec();
             synchronized (monitor) {
                 while (operationsSequential.getSecondCounter() < 2) {
@@ -89,7 +96,9 @@ public class OperationsSequential {
                     System.out.println("woke up ...");
                 }
             }
+            System.out.println("C2 finished.");
             C3.exec();
+            System.out.println("C3 finished.");
         };
 
         new Thread(runAs).start();
