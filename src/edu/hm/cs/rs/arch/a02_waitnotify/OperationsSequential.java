@@ -1,6 +1,6 @@
 package edu.hm.cs.rs.arch.a02_waitnotify;
 
-import static edu.hm.cs.rs.arch.a02_wai tnotify.Operation.*;
+import static edu.hm.cs.rs.arch.a02_waitnotify.Operation.*;
 
 public class OperationsSequential {
     private int firstCounter;
@@ -41,6 +41,10 @@ public class OperationsSequential {
                 monitor.notifyAll();
             }
             A2.exec();
+            synchronized (monitor){
+                operationsSequential.setSecondCounter(operationsSequential.getSecondCounter()+1);
+                monitor.notifyAll();
+            }
             A3.exec();
         };
 
@@ -51,17 +55,40 @@ public class OperationsSequential {
                 monitor.notifyAll();
             }
             B2.exec();
+            synchronized (monitor){
+                operationsSequential.setSecondCounter(operationsSequential.getSecondCounter()+1);
+                monitor.notifyAll();
+            }
             B3.exec();
         };
 
         Runnable runCs = () -> {
             C1.exec();
             synchronized (monitor){
-            if(operationsSequential.getFirstCounter()==2){
-                //do stuff
-            }
+                while(operationsSequential.getFirstCounter()!=2) {
+                    System.out.println("waiting ...");
+                    try {
+                        monitor.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("woke up ...");
+                }
+                operationsSequential.setSecondCounter(operationsSequential.getSecondCounter()+1);
+                monitor.notifyAll();
             }
             C2.exec();
+            synchronized (monitor) {
+                while (operationsSequential.getSecondCounter() < 2) {
+                    System.out.println("waiting ...");
+                    try {
+                        monitor.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("woke up ...");
+                }
+            }
             C3.exec();
         };
 
