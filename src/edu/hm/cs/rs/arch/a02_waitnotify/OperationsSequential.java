@@ -54,7 +54,7 @@ public class OperationsSequential {
         Runnable runBs = () -> {
             B1.exec();
             synchronized (monitor){
-                operationsSequential.setFirstCounter(operationsSequential.getSecondCounter()+1);
+                operationsSequential.setFirstCounter(operationsSequential.getFirstCounter()+1);
                 monitor.notifyAll();
             }
             System.out.println("B1 finished.");
