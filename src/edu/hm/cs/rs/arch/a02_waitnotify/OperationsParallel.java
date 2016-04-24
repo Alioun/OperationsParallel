@@ -11,7 +11,7 @@ import static edu.hm.cs.rs.arch.a02_waitnotify.Operation.*;
  * @author Florian Frank, Alioun Diagne
  * @version 2016-04-23
  **/
-public class OperationsSequential {
+public class OperationsParallel {
     /**
      * Counts up when A1 or B1 is executed.
      * Never should go above 2.
@@ -27,7 +27,7 @@ public class OperationsSequential {
     /**
      * Constructor initializes firstCounter and secondCounter to zero.
      */
-    public OperationsSequential() {
+    public OperationsParallel() {
         firstCounter = 0;
         secondCounter = 0;
     }
@@ -41,16 +41,16 @@ public class OperationsSequential {
     public static void main(String... args) {
         init(args);
 
-        final OperationsSequential operationsSequential = new OperationsSequential();
+        final OperationsParallel operationsParallel = new OperationsParallel();
         final Object monitor = new Object();
 
         final Runnable runAs = () -> {
             System.out.println("A1 started.");
             A1.exec();
-            operationsSequential.synchronizeCountHelper(monitor, 1);
+            operationsParallel.synchronizeCountHelper(monitor, 1);
             System.out.println("A2 started.");
             A2.exec();
-            operationsSequential.synchronizeCountHelper(monitor, 2);
+            operationsParallel.synchronizeCountHelper(monitor, 2);
 
             System.out.println("A3 started.");
             A3.exec();
@@ -59,11 +59,11 @@ public class OperationsSequential {
         final Runnable runBs = () -> {
             System.out.println("B1 started.");
             B1.exec();
-            operationsSequential.synchronizeCountHelper(monitor, 1);
+            operationsParallel.synchronizeCountHelper(monitor, 1);
 
             System.out.println("B2 started.");
             B2.exec();
-            operationsSequential.synchronizeCountHelper(monitor, 2);
+            operationsParallel.synchronizeCountHelper(monitor, 2);
 
             System.out.println("B3 started.");
             B3.exec();
@@ -73,7 +73,7 @@ public class OperationsSequential {
             System.out.println("C1 started.");
             C1.exec();
             synchronized (monitor) {
-                while (operationsSequential.getFirstCounter() != 2) {
+                while (operationsParallel.getFirstCounter() != 2) {
                     System.out.println("waiting ...");
                     try {
                         monitor.wait();
@@ -82,13 +82,13 @@ public class OperationsSequential {
                     }
                     System.out.println("woke up ...");
                 }
-                operationsSequential.setSecondCounter(operationsSequential.getSecondCounter() + 1);
+                operationsParallel.setSecondCounter(operationsParallel.getSecondCounter() + 1);
                 monitor.notifyAll();
             }
             System.out.println("C2 started.");
             C2.exec();
             synchronized (monitor) {
-                while (operationsSequential.getSecondCounter() < 2) {
+                while (operationsParallel.getSecondCounter() < 2) {
                     System.out.println("waiting ...");
                     try {
                         monitor.wait();
