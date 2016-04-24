@@ -12,6 +12,13 @@ import static edu.hm.cs.rs.arch.a02_waitnotify.Operation.*;
  * @version 2016-04-23
  **/
 public class OperationsParallel {
+
+    /**
+     * Static variable three.
+     * Helps with
+     */
+    private static final int THREE = 3;
+
     /**
      * Counts up when A1 or B1 is executed.
      * Never should go above 2.
@@ -25,11 +32,18 @@ public class OperationsParallel {
     private int secondCounter;
 
     /**
+     * Counts up when all of A, B or C is executed.
+     * Never should go above 3.
+     */
+    private int thirdCounter;
+
+    /**
      * Constructor initializes firstCounter and secondCounter to zero.
      */
     public OperationsParallel() {
         firstCounter = 0;
         secondCounter = 0;
+        thirdCounter = 0;
     }
 
     /**
@@ -54,6 +68,7 @@ public class OperationsParallel {
 
             System.out.println("A3 started.");
             A3.exec();
+            operationsParallel.synchronizeCountHelper(monitor, THREE);
         };
 
         final Runnable runBs = () -> {
@@ -67,24 +82,13 @@ public class OperationsParallel {
 
             System.out.println("B3 started.");
             B3.exec();
+            operationsParallel.synchronizeCountHelper(monitor, THREE);
         };
 
         final Runnable runCs = () -> {
             System.out.println("C1 started.");
             C1.exec();
-            synchronized (monitor) {
-                while (operationsParallel.getFirstCounter() != 2) {
-                    System.out.println("waiting ...");
-                    try {
-                        monitor.wait();
-                    } catch (InterruptedException exception) {
-                        exception.printStackTrace();
-                    }
-                    System.out.println("woke up ...");
-                }
-                operationsParallel.setSecondCounter(operationsParallel.getSecondCounter() + 1);
-                monitor.notifyAll();
-            }
+            operationsParallel.synchronizeC2Helper(monitor, operationsParallel);
             System.out.println("C2 started.");
             C2.exec();
             synchronized (monitor) {
@@ -100,13 +104,23 @@ public class OperationsParallel {
             }
             System.out.println("C3 started.");
             C3.exec();
+            operationsParallel.synchronizeCountHelper(monitor, THREE);
         };
 
         new Thread(runAs).start();
         new Thread(runBs).start();
         new Thread(runCs).start();
 
-        System.out.println("complete");
+        synchronized (monitor) {
+            while (operationsParallel.thirdCounter != THREE) {
+                try {
+                    monitor.wait();
+                } catch (InterruptedException exception) {
+                    exception.printStackTrace();
+                }
+            }
+            System.out.println("complete");
+        }
     }
 
     private synchronized int getFirstCounter() {
@@ -123,7 +137,8 @@ public class OperationsParallel {
 
     /**
      * Counts the counters up in an synchronized block.
-     * @param monitor monitor to synchronize to.
+     *
+     * @param monitor       monitor to synchronize to.
      * @param counterNumber number of the counter to count up.
      */
     private void synchronizeCountHelper(Object monitor, int counterNumber) {
@@ -132,7 +147,31 @@ public class OperationsParallel {
                 firstCounter++;
             } else if (counterNumber == 2) {
                 secondCounter++;
+            } else if (counterNumber == THREE) {
+                thirdCounter++;
             }
+            monitor.notifyAll();
+        }
+    }
+
+    /**
+     * Checks if the firstCounter is two after that it counts up the second counter and notifies all monitors waiting.
+     *
+     * @param monitor            monitor to synchronize to.
+     * @param operationsParallel operationsParallel object to access the first and second counter.
+     */
+    private void synchronizeC2Helper(Object monitor, OperationsParallel operationsParallel) {
+        synchronized (monitor) {
+            while (operationsParallel.getFirstCounter() != 2) {
+                System.out.println("waiting ...");
+                try {
+                    monitor.wait();
+                } catch (InterruptedException exception) {
+                    exception.printStackTrace();
+                }
+                System.out.println("woke up ...");
+            }
+            operationsParallel.setSecondCounter(operationsParallel.getSecondCounter() + 1);
             monitor.notifyAll();
         }
     }
