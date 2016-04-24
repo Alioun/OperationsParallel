@@ -109,11 +109,11 @@ public class OperationsParallel {
         System.out.println("complete");
     }
 
-    private int getFirstCounter() {
+    private synchronized int getFirstCounter() {
         return firstCounter;
     }
 
-    private int getSecondCounter() {
+    private synchronized int getSecondCounter() {
         return secondCounter;
     }
 
