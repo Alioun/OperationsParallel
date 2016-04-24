@@ -59,50 +59,47 @@ public class OperationsParallel {
         final Object monitor = new Object();
 
         final Runnable runAs = () -> {
-            System.out.println("A1 started.");
+            //System.out.println("A1 started.");
             A1.exec();
             operationsParallel.synchronizeCountHelper(monitor, 1);
-            System.out.println("A2 started.");
+            //System.out.println("A2 started.");
             A2.exec();
             operationsParallel.synchronizeCountHelper(monitor, 2);
-
-            System.out.println("A3 started.");
+            //System.out.println("A3 started.");
             A3.exec();
             operationsParallel.synchronizeCountHelper(monitor, THREE);
         };
 
         final Runnable runBs = () -> {
-            System.out.println("B1 started.");
+            //System.out.println("B1 started.");
             B1.exec();
             operationsParallel.synchronizeCountHelper(monitor, 1);
 
-            System.out.println("B2 started.");
+            //System.out.println("B2 started.");
             B2.exec();
             operationsParallel.synchronizeCountHelper(monitor, 2);
 
-            System.out.println("B3 started.");
+            //System.out.println("B3 started.");
             B3.exec();
             operationsParallel.synchronizeCountHelper(monitor, THREE);
         };
 
         final Runnable runCs = () -> {
-            System.out.println("C1 started.");
+            //System.out.println("C1 started.");
             C1.exec();
             operationsParallel.synchronizeC2Helper(monitor, operationsParallel);
-            System.out.println("C2 started.");
+            //System.out.println("C2 started.");
             C2.exec();
             synchronized (monitor) {
                 while (operationsParallel.getSecondCounter() < 2) {
-                    System.out.println("waiting ...");
                     try {
                         monitor.wait();
                     } catch (InterruptedException exception) {
                         exception.printStackTrace();
                     }
-                    System.out.println("woke up ...");
                 }
             }
-            System.out.println("C3 started.");
+            //System.out.println("C3 started.");
             C3.exec();
             operationsParallel.synchronizeCountHelper(monitor, THREE);
         };
@@ -163,13 +160,11 @@ public class OperationsParallel {
     private void synchronizeC2Helper(Object monitor, OperationsParallel operationsParallel) {
         synchronized (monitor) {
             while (operationsParallel.getFirstCounter() != 2) {
-                System.out.println("waiting ...");
                 try {
                     monitor.wait();
                 } catch (InterruptedException exception) {
                     exception.printStackTrace();
                 }
-                System.out.println("woke up ...");
             }
             operationsParallel.setSecondCounter(operationsParallel.getSecondCounter() + 1);
             monitor.notifyAll();
